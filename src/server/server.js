@@ -14,6 +14,8 @@ class Server {
 
     routes() {
         this.app.use('/api/persona', require('../routes/persona'));
+        this.app.use('/registro', require('../routes/registro'));
+        this.app.use('/direccion', require('../routes/direccion'));
     }
 
     middlewares() {
