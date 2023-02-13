@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const router = Router();
-const MySQL = require('./../mysql/mysql');
+const MySQL = require('../db/mysql');
 
 
 // QUERY DE PRUEBA

@@ -1,9 +1,7 @@
 const { Router } = require('express');
 const router = Router();
-const MySQL = require('./../mysql/mysql');
+const MySQL = require('../db/mysql');
 
-
-// QUERY DE PRUEBA
 router.post('/completo/', function(req, res) {
 
     var body = req.body;
@@ -31,8 +29,11 @@ router.post('/completo/', function(req, res) {
         ${MySQL.instance.cnn.escape(body.usuario_persona || '')},
         ${MySQL.instance.cnn.escape(body.contrasena_persona || '')},
         ${MySQL.instance.cnn.escape(body.tipo_persona || tipoPaciente)},
+        ${body.permiso_consulta || 0},
+        ${body.permiso_admin || 0},
         ${MySQL.instance.cnn.escape(body.correo_persona || '')},
         ${MySQL.instance.cnn.escape(body.telefono_persona || '')},
+        ${body.estatus_persona || 1},
         ${MySQL.instance.cnn.escape(body.parentesco_persona || '')},
         ${body.fk_dependencia_persona || 0},
         ${body.fk_paciente_persona || 0},
@@ -128,6 +129,91 @@ router.post('/completo/', function(req, res) {
                 ok: false,
                 mensaje: 'Error al registrar paciente',
                 error: 'Error al registrar paciente'
+            });
+        }
+    }).catch((e) => {
+        return res.json({
+            ok: false,
+            mensaje: 'Error de servidor (DB).',
+            error: 'Error de servidor (DB).',
+            e
+        });
+    });
+
+});
+
+
+router.post('/persona/completa', function(req, res) {
+
+    var body = req.body;
+    var tipoPaciente = 'paciente';
+
+    // console.log(body);
+
+    // INSERTAR PRIMERO TODA LA INFORMACIÓN DEL PACIENTE
+    var queryInsertarPersonaCompleta = `CALL insertarPersonaCompleta(
+        ${MySQL.instance.cnn.escape(body.calle || '')},
+        ${MySQL.instance.cnn.escape(body.numero_exterior || '')},
+        ${MySQL.instance.cnn.escape(body.numero_interior || '')},
+        ${MySQL.instance.cnn.escape(body.colonia || '')},
+        ${MySQL.instance.cnn.escape(body.cp || '')},
+        ${MySQL.instance.cnn.escape(body.entre_calle || '')},
+        ${MySQL.instance.cnn.escape(body.referencias || '')},
+        ${body.id_municipio || 0},
+        ${MySQL.instance.cnn.escape(body.localidad || '')}, 
+
+        ${MySQL.instance.cnn.escape(body.nombre_persona || '')},
+        ${MySQL.instance.cnn.escape(body.ap_paterno_persona || '')},
+        ${MySQL.instance.cnn.escape(body.ap_materno_persona || '')},
+        ${MySQL.instance.cnn.escape(body.curp_persona || '')},
+        ${MySQL.instance.cnn.escape(body.nacimiento_persona || '')},
+        ${MySQL.instance.cnn.escape(body.genero_persona || '')},
+        ${MySQL.instance.cnn.escape(body.usuario_persona || '')},
+        ${MySQL.instance.cnn.escape(body.contrasena_persona || '')},
+        ${MySQL.instance.cnn.escape(body.tipo_persona || tipoPaciente)},
+        ${body.permiso_consulta || 0},
+        ${body.permiso_admin || 0},
+        ${MySQL.instance.cnn.escape(body.correo_persona || '')},
+        ${MySQL.instance.cnn.escape(body.telefono_persona || '')},
+        ${body.estatus_persona || 1},
+        ${MySQL.instance.cnn.escape(body.parentesco_persona || '')},
+        ${body.fk_dependencia_persona || 1},
+        ${body.fk_paciente_persona || 0},
+        ${body.fk_registro_persona || 0},
+
+        ${body.p1 || 0},
+        ${body.p2 || 0},
+        ${body.p3 || 0},
+        ${body.p4 || 0},
+        ${body.p5 || 0},
+        ${body.p6 || 0},
+        ${body.p7 || 0},
+        ${body.p8 || 0},
+        ${body.p9 || 0},
+        ${body.p10 || 0},
+        ${body.p11 || 0},
+        ${body.p12 || 0},
+        ${body.p13 || 0},
+        ${body.p14 || 0},
+        ${body.p15 || 0}
+    );`;
+
+    // console.log(queryInsertarPersonaCompleta);
+    // return;
+
+    MySQL.ejecutarQueryPr(queryInsertarPersonaCompleta).then((results1) => {
+
+        if (results1[0][0].id_persona > 0) {
+            return res.json({
+                ok: true,
+                mensaje: 'Éxito al registrar persona'
+            });
+        } else {
+            // No se agregó persona
+            return res.json({
+                ok: false,
+                mensaje: 'Error al registrar persona',
+                error: 'Error al registrar persona'
             });
         }
     }).catch((e) => {
