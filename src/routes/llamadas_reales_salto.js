@@ -108,7 +108,7 @@ router.post('/busqueda', function(req, res) {
     console.log(WHERE);
 
 
-    ConOracleSalto.ejecutarQueryPr(QUERY).then((results) => {
+    ConOracleSalto.ejecutarQueryPrSalto(QUERY).then((results) => {
         let llamadas = [];
         // Convertir de matriz a JSON
         results.forEach((element) => {
